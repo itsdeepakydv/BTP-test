@@ -100,7 +100,13 @@ def analyze_teaching_style(teacher_speech_ratio, interactivity_score):
     return style
 
 
-def generate_sankey_diagram(transcript,uploaded_file):
+def process_transcription(file_url, api_key, speakers_expected=10):
+    st.subheader("📢 Processing Audio File...")
+    
+    # Set API key
+    aai.settings.api_key = api_key
+
+    # Configure transcription settings
     config = aai.TranscriptionConfig(
         speech_model=aai.SpeechModel.best,
         summarization=True,
@@ -111,84 +117,113 @@ def generate_sankey_diagram(transcript,uploaded_file):
         entity_detection=True,
         speaker_labels=True,
         language_detection=True,
-        speakers_expected=10,
+        speakers_expected=speakers_expected,
         summary_type=aai.SummarizationType.bullets
-    )   
+    )
+
+    # Transcribe the file
     transcriber = aai.Transcriber(config=config)
-    transcript = transcriber.transcribe(uploaded_file)
-    topic_timestamps = []
-    topic_count = {}
-    
+    transcript = transcriber.transcribe(file_url)
+
+    if transcript.status == aai.TranscriptStatus.error:
+        st.error(f"❌ Error: {transcript.error}")
+        return
+
+    # Process Speaker Activity
+    speaker_activity = []
+    for utterance in transcript.utterances:
+        speaker_activity.append({
+            "Speaker": utterance.speaker,
+            "StartTime": utterance.start // 1000,
+            "EndTime": utterance.end // 1000,
+            "Duration": (utterance.end - utterance.start) // 1000
+        })
+    df_speaker = pd.DataFrame(speaker_activity)
+
+    # Convert timestamps
+    df_speaker["StartTime"] = pd.to_datetime(df_speaker["StartTime"], unit="s")
+    df_speaker["EndTime"] = pd.to_datetime(df_speaker["EndTime"], unit="s")
+
+    # Create Speaker Timeline
+    fig1 = px.timeline(
+        df_speaker, x_start="StartTime", x_end="EndTime", y="Speaker",
+        color="Speaker", title="🎤 Speaker Activity Timeline",
+        color_discrete_sequence=px.colors.qualitative.Dark24
+    )
+    fig1.update_layout(xaxis_title="Time", yaxis_title="Speakers", hovermode="x", plot_bgcolor="white")
+
+    # Process Topic Analysis
+    topic_timestamps, topic_mapping, topic_count = [], {}, {}
     for result in transcript.iab_categories.results:
         start_time = result.timestamp.start // 1000
         end_time = result.timestamp.end // 1000
         for label in result.labels:
             topic = label.label.split(">")[-1]
             topic_timestamps.append((topic, start_time, end_time))
+            topic_mapping[topic] = label.label
             topic_count[topic] = topic_count.get(topic, 0) + 1
-    
-    def format_time(seconds):
-        minutes = seconds // 60
-        seconds = seconds % 60
-        return f"{minutes:02}:{seconds:02}"
-    
-    df = pd.DataFrame(topic_timestamps, columns=["Topic", "StartTime", "EndTime"])
-    df = df.sort_values("StartTime")
-    
+
+    df_topic = pd.DataFrame(topic_timestamps, columns=["Topic", "StartTime", "EndTime"])
+    df_topic = df_topic.sort_values("StartTime")
     top_topics = sorted(topic_count, key=topic_count.get, reverse=True)[:10]
-    df = df[df["Topic"].isin(top_topics)]
-    
+    df_topic = df_topic[df_topic["Topic"].isin(top_topics)]
+
+    # Sankey Diagram for Topic Flow
     labels = ["Start"] + top_topics + ["End"]
     source, target, values, timestamps = [], [], [], []
     prev_topic = "Start"
-    
-    for _, row in df.iterrows():
-        current_topic = row["Topic"]
-        start_time = row["StartTime"]
 
+    def format_time(seconds):
+        return f"{seconds // 60:02}:{seconds % 60:02}"
+
+    for _, row in df_topic.iterrows():
+        current_topic = row["Topic"]
         if current_topic in labels:
             source.append(labels.index(prev_topic))
             target.append(labels.index(current_topic))
             values.append(1)
-            timestamps.append(f"{format_time(start_time)}")
+            timestamps.append(format_time(row["StartTime"]))
             prev_topic = current_topic
-    
+
     source.append(labels.index(prev_topic))
     target.append(labels.index("End"))
     values.append(1)
-    timestamps.append(f"{format_time(row['EndTime'])}")
-    
-    colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#F4A226",
-              "#6A0DAD", "#2E8B57", "#1E90FF", "#8B0000", "#FFD700"]
-    
-    fig = go.Figure(go.Sankey(
-        arrangement="perpendicular",
-        node=dict(
-            label=[""] * len(labels),
-            pad=50,
-            thickness=30,
-            color=colors[:len(labels)],
-            customdata=labels,
-            hovertemplate="Topic: %{customdata}<extra></extra>",
-        ),
-        link=dict(
-            source=source,
-            target=target,
-            value=values,
-            customdata=timestamps,
-            hovertemplate="From: %{source.labels} → To: %{target.labels}<br>Time: %{customdata}",
-            color=['rgba(0, 0, 255, 0.3)'] * len(source)
-        )
-    ))
-    
-    fig.update_layout(
-        title_text="🔗 Improved Classroom Topic Flow with Timestamps",
-        font_size=12,
-        height=400
-    )
-    
-    return fig
+    timestamps.append(format_time(row["EndTime"]))
 
+    fig2 = go.Figure(go.Sankey(
+        node=dict(label=[""] * len(labels), pad=50, thickness=30, color="blue"),
+        link=dict(source=source, target=target, value=values, customdata=timestamps,
+                  hovertemplate="Time: %{customdata}<extra></extra>")
+    ))
+    fig2.update_layout(title_text="🔗 Topic Flow with Timestamps", font_size=12, height=400)
+
+    # Bar Chart for Topic Timeline
+    df_topic["StartTimeFormatted"] = df_topic["StartTime"].apply(format_time)
+    df_topic["EndTimeFormatted"] = df_topic["EndTime"].apply(format_time)
+
+    fig3 = px.bar(
+        df_topic, x="StartTime", y="Topic", orientation="h", text="StartTimeFormatted",
+        title="📊 Topic Discussion Timeline (Top 10 Topics)", color="Topic"
+    )
+    fig3.update_traces(hovertemplate="<b>Topic:</b> %{y}<br><b>Start:</b> %{customdata[0]}<br><b>End:</b> %{customdata[1]}")
+    fig3.update_layout(xaxis_title="Time (seconds)", yaxis_title="Topics", plot_bgcolor="white", height=600)
+
+    # Display in Streamlit
+    st.subheader("📜 Transcription Summary")
+    st.write(transcript.summary)
+
+    st.subheader("📊 Speaker Activity")
+    st.plotly_chart(fig1, use_container_width=True)
+
+    st.subheader("🔗 Topic Flow")
+    st.plotly_chart(fig2, use_container_width=True)
+
+    st.subheader("📌 Topic Discussion Timeline")
+    st.plotly_chart(fig3, use_container_width=True)
+
+    st.subheader("📈 Sentiment Analysis")
+    for result in transcript.sentiment_analysis:
+        st.write(f"💬 **{result.text}** - Sentiment: **{result.sentiment}**")
 
 def transcribe_and_visualize(file_url, speakers_expected=10):
     config = aai.TranscriptionConfig(
@@ -383,11 +418,14 @@ def main():
             
             # st.plotly_chart(fig)
 
-            st.subheader("Improved Classroom Topic Flow with Timestamps")
-            fig = generate_sankey_diagram(transcript,uploaded_file)
-            st.plotly_chart(fig)
+            # st.subheader("Improved Classroom Topic Flow with Timestamps")
+            # fig = generate_sankey_diagram(transcript,uploaded_file)
+            # st.plotly_chart(fig)
+             
 
             # transcribe_and_visualize(uploaded_file)
+
+            process_transcription(file_path, api_key)
 
         os.remove(file_path)
 
