@@ -255,6 +255,60 @@ def transcribe_and_visualize(file_url, speakers_expected=10):
     st.plotly_chart(fig, use_container_width=True)
 
     # Display Summary
+    df = pd.DataFrame(topic_timestamps, columns=["Topic", "StartTime", "EndTime"])
+df = df.sort_values("StartTime")
+
+# Get the top 10 most discussed topics
+top_10_topics = sorted(topic_count, key=topic_count.get, reverse=True)[:10]
+df = df[df["Topic"].isin(top_10_topics)]  # Filter only top 10 topics
+
+# Convert timestamps to MM:SS format for better readability
+def format_time(seconds):
+    minutes = seconds // 60
+    seconds = seconds % 60
+    return f"{minutes:02}:{seconds:02}"
+
+df["StartTimeFormatted"] = df["StartTime"].apply(format_time)
+df["EndTimeFormatted"] = df["EndTime"].apply(format_time)
+
+# Create Interactive Bar Chart for Timeline
+fig = px.bar(
+    df,
+    x="StartTime",  # X-axis: Timestamp when topic started
+    y="Topic",      # Y-axis: Topics
+    orientation="h",  # Horizontal bars
+    text="StartTimeFormatted",  # Display start time inside bars
+    title="📊 Interactive Topic Discussion Timeline (Top 10 Topics)",
+    color="Topic",
+    labels={"StartTime": "Start Time (seconds)", "Topic": "Topic Discussed"},
+    hover_data={"StartTimeFormatted": True, "EndTimeFormatted": True}
+)
+
+# Improve hover template to show timestamps clearly
+fig.update_traces(
+    hovertemplate="<b>Topic:</b> %{y}<br><b>Start:</b> %{customdata[0]}<br><b>End:</b> %{customdata[1]}",
+    marker=dict(line=dict(width=1, color="black")),  # Add black border to bars
+)
+
+# Update layout for better visibility
+fig.update_layout(
+    xaxis_title="Time (seconds)",
+    yaxis_title="Topics",
+    plot_bgcolor="white",
+    yaxis=dict(
+        title="Topics",
+        categoryorder="total ascending",  # Order topics from least to most discussed
+        tickmode="linear",
+        dtick=1  # Ensure topics are spaced out evenly
+    ),
+    height=600,  # Increase height for better visibility
+    margin=dict(l=150, r=50, t=50, b=50)  # Adjust margins for better readability
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
+
+    
     st.subheader("📌 Summary")
     st.write(transcript.summary)
 
@@ -264,6 +318,8 @@ def transcribe_and_visualize(file_url, speakers_expected=10):
     #     st.write(f"**{sentiment_result.text}**")
     #     st.write(f"Sentiment: `{sentiment_result.sentiment}`")
     #     st.write("---")
+
+
 
 
 
