@@ -221,9 +221,9 @@ def process_transcription(file_url, api_key, speakers_expected=10):
     st.subheader("📌 Topic Discussion Timeline")
     st.plotly_chart(fig3, use_container_width=True)
 
-    st.subheader("📈 Sentiment Analysis")
-    for result in transcript.sentiment_analysis:
-        st.write(f"💬 **{result.text}** - Sentiment: **{result.sentiment}**")
+    # st.subheader("📈 Sentiment Analysis")
+    # for result in transcript.sentiment_analysis:
+    #     st.write(f"💬 **{result.text}** - Sentiment: **{result.sentiment}**")
 
 
 
