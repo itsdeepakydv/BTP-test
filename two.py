@@ -100,7 +100,7 @@ def analyze_teaching_style(teacher_speech_ratio, interactivity_score):
     return style
 
 
-def process_transcription(file_url, api_key, speakers_expected=10):
+def process_transcription(file_url, api_key, speakers_expected):
     st.subheader("📢 Processing Audio File...")
     
     # Set API key
@@ -294,7 +294,7 @@ def main():
 
             # transcribe_and_visualize(uploaded_file)
             api_key="85e63f64ed954279bff9a588c0bd2f2f"
-            process_transcription(file_path, api_key)
+            process_transcription(file_path, api_key,total_strength)
 
         os.remove(file_path)
 
