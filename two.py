@@ -286,7 +286,7 @@ def main():
             st.error("Error in transcription: " + transcript.error)
         else:
             results = calculate_interactivity_score(transcript, total_strength)
-            topic_timestamps, topic_count = extract_topics(transcript)
+            # topic_timestamps, topic_count = extract_topics(transcript)
             
             st.subheader("CLASS INTERACTIVITY STATS")
             st.write(f"**Interactive Pair Count:** {results['interactive_pairs']}")
