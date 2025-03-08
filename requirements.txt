@@ -1,6 +1,5 @@
 streamlit
 assemblyai
-python==3.10  
 spacy==3.5.0
 thinc==8.1.10
 plotly
