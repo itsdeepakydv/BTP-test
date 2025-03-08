@@ -1,7 +1,7 @@
 import streamlit as st
 import assemblyai as aai
 import os
-import spacy
+# import spacy
 import plotly.express as px
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -11,7 +11,7 @@ import plotly.express as px
 import os
 
 # Load spaCy model for Named Entity Recognition (NER)
-nlp = spacy.load("en_core_web_sm")
+# nlp = spacy.load("en_core_web_sm")
 
 aai.settings.api_key = "85e63f64ed954279bff9a588c0bd2f2f"  # Replace with your actual API key
 
@@ -26,19 +26,19 @@ def transcribe_audio(file_path):
     transcript = transcriber.transcribe(file_path)
     return transcript
 
-def extract_topics(transcript):
-    topic_timestamps = []
-    topic_count = {}
+# def extract_topics(transcript):
+#     topic_timestamps = []
+#     topic_count = {}
     
-    for utterance in transcript.utterances:
-        doc = nlp(utterance.text)
-        for ent in doc.ents:
-            if ent.label_ in ["ORG", "GPE", "EVENT", "PRODUCT", "WORK_OF_ART", "PERSON"]:
-                topic = ent.text
-                topic_timestamps.append((topic, utterance.start, utterance.end))
-                topic_count[topic] = topic_count.get(topic, 0) + 1
+#     for utterance in transcript.utterances:
+#         doc = nlp(utterance.text)
+#         for ent in doc.ents:
+#             if ent.label_ in ["ORG", "GPE", "EVENT", "PRODUCT", "WORK_OF_ART", "PERSON"]:
+#                 topic = ent.text
+#                 topic_timestamps.append((topic, utterance.start, utterance.end))
+#                 topic_count[topic] = topic_count.get(topic, 0) + 1
                 
-    return topic_timestamps, topic_count
+#     return topic_timestamps, topic_count
 
 def calculate_interactivity_score(transcript, total_strength):
     unique_speakers = set()
