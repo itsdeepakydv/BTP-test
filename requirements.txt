@@ -1,2 +1,7 @@
 streamlit
 assemblyai
+spacy
+plotly
+pandas
+matplotlib
+seaborn
