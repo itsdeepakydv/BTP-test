@@ -301,31 +301,31 @@ def main():
             st.write(f"**Detected Style:** {teaching_style}")
             
             # Convert topic timestamps into DataFrame
-            df = pd.DataFrame(topic_timestamps, columns=["Topic", "StartTime", "EndTime"])
-            df = df.sort_values("StartTime")
+            # df = pd.DataFrame(topic_timestamps, columns=["Topic", "StartTime", "EndTime"])
+            # df = df.sort_values("StartTime")
             
-            # Get the top 10 most discussed topics
-            top_10_topics = sorted(topic_count, key=topic_count.get, reverse=True)[:10]
-            df = df[df["Topic"].isin(top_10_topics)]
+            # # Get the top 10 most discussed topics
+            # top_10_topics = sorted(topic_count, key=topic_count.get, reverse=True)[:10]
+            # df = df[df["Topic"].isin(top_10_topics)]
             
-            # Format timestamps for readability
-            df["StartTimeFormatted"] = df["StartTime"].apply(lambda x: f"{x//60:02}:{x%60:02}")
-            df["EndTimeFormatted"] = df["EndTime"].apply(lambda x: f"{x//60:02}:{x%60:02}")
+            # # Format timestamps for readability
+            # df["StartTimeFormatted"] = df["StartTime"].apply(lambda x: f"{x//60:02}:{x%60:02}")
+            # df["EndTimeFormatted"] = df["EndTime"].apply(lambda x: f"{x//60:02}:{x%60:02}")
             
-            # Create Interactive Bar Chart for Timeline
-            fig = px.bar(
-                df,
-                x="StartTime",
-                y="Topic",
-                orientation="h",
-                text="StartTimeFormatted",
-                title="📊 Interactive Topic Discussion Timeline (Top 10 Topics)",
-                color="Topic",
-                labels={"StartTime": "Start Time (seconds)", "Topic": "Topic Discussed"},
-                hover_data={"StartTimeFormatted": True, "EndTimeFormatted": True}
-            )
+            # # Create Interactive Bar Chart for Timeline
+            # fig = px.bar(
+            #     df,
+            #     x="StartTime",
+            #     y="Topic",
+            #     orientation="h",
+            #     text="StartTimeFormatted",
+            #     title="📊 Interactive Topic Discussion Timeline (Top 10 Topics)",
+            #     color="Topic",
+            #     labels={"StartTime": "Start Time (seconds)", "Topic": "Topic Discussed"},
+            #     hover_data={"StartTimeFormatted": True, "EndTimeFormatted": True}
+            # )
             
-            st.plotly_chart(fig)
+            # st.plotly_chart(fig)
 
             st.subheader("Improved Classroom Topic Flow with Timestamps")
             fig = generate_sankey_diagram(transcript,uploaded_file)
