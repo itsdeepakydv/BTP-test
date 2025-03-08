@@ -6,4 +6,4 @@ plotly
 pandas
 matplotlib
 seaborn
-
+config
