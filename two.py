@@ -293,7 +293,7 @@ def main():
              
 
             # transcribe_and_visualize(uploaded_file)
-
+            api_key="85e63f64ed954279bff9a588c0bd2f2f"
             process_transcription(file_path, api_key)
 
         os.remove(file_path)
