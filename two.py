@@ -204,11 +204,11 @@ def process_transcription(transcript,file_url, api_key, speakers_expected):
           "#6A0DAD", "#2E8B57", "#1E90FF", "#8B0000", "#FFD700"]
 
     fig2 = go.Figure(go.Sankey(
-    arrangement="perpendicular",
+    arrangement="perpendicular",  
     node=dict(
         label=[""] * len(labels),
-        pad=50,
-        thickness=30,
+        pad=50,  
+        thickness=30,  
         color=colors[:len(labels)],
         customdata=labels,
         hovertemplate="Topic: %{customdata}<extra></extra>",
@@ -217,10 +217,14 @@ def process_transcription(transcript,file_url, api_key, speakers_expected):
         source=source,
         target=target,
         value=values,
-        customdata=timestamps,
-        hovertemplate="From: %{source.labels} → To: %{target.labels}<br>Time: %{customdata}",  # Displays time in MM:SS
+        customdata=timestamps,  
+        hovertemplate=(
+            "From: " + "<b>%{source.customdata}</b>" + 
+            " → To: " + "<b>%{target.customdata}</b><br>"
+            "Time: %{customdata}"
+        ), # Displays time in MM:SS
         color=['rgba(0, 0, 255, 0.3)'] * len(source)
-    )
+    )
 ))
     fig2.update_layout(title_text="🔗 Topic Flow with Timestamps", font_size=12, height=400)
 
