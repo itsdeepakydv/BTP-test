@@ -219,12 +219,12 @@ def process_transcription(transcript,file_url, api_key, speakers_expected):
         value=values,
         customdata=timestamps,  
         hovertemplate=(
-            "From: " + "<b>%{source.customdata}</b>" + 
-            " → To: " + "<b>%{target.customdata}</b><br>"
+            "From: <b>%{source.customdata}</b> → "
+            "To: <b>%{target.customdata}</b><br>"
             "Time: %{customdata}"
-        ), # Displays time in MM:SS
-        color=['rgba(0, 0, 255, 0.3)'] * len(source)
-    )
+        ),  # Displays time in MM:SS
+        color=['rgba(0, 0, 255, 0.3)'] * len(source),
+    )
 ))
     fig2.update_layout(title_text="🔗 Topic Flow with Timestamps", font_size=12, height=400)
 
