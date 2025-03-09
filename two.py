@@ -238,7 +238,20 @@ def process_transcription(transcript,file_url, api_key, speakers_expected):
         title="📊 Topic Discussion Timeline (Top 10 Topics)", color="Topic"
     )
     fig3.update_traces(hovertemplate="<b>Topic:</b> %{y}<br><b>Start:</b> %{customdata[0]}<br><b>End:</b> %{customdata[1]}")
-    fig3.update_layout(xaxis_title="Time (seconds)", yaxis_title="Topics", plot_bgcolor="white", height=600)
+    # fig3.update_layout(xaxis_title="Time (seconds)", yaxis_title="Topics", plot_bgcolor="white", height=600)
+    fig3.update_layout(
+     xaxis_title="Time (seconds)",
+     yaxis_title="Topics",
+     plot_bgcolor="white",
+     yaxis=dict(
+        title="Topics",
+        categoryorder="total ascending",  # Order topics from least to most discussed
+        tickmode="linear",
+        dtick=1  # Ensure topics are spaced out evenly
+     ),
+     height=600,  # Increase height for better visibility
+     margin=dict(l=150, r=50, t=50, b=50)  # Adjust margins for better readability
+    )
 
     top_5_topics = sorted(topic_count.items(), key=lambda x: x[1], reverse=True)[:5]
     topics, counts = zip(*top_5_topics)  # Unpack topics and their respective counts
