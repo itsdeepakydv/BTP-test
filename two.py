@@ -284,7 +284,7 @@ def process_transcription(transcript,file_url, api_key, speakers_expected):
     fig3.update_layout(
     xaxis_title="Time (seconds)",
     yaxis_title="Topics",
-    plot_bgcolor="white",
+    plot_bgcolor="grey",
     yaxis=dict(
         title="Topics",
         categoryorder="total ascending",  # Order topics from least to most discussed
