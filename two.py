@@ -320,10 +320,10 @@ def process_transcription(transcript,file_url, api_key, speakers_expected):
     st.subheader("📜 Transcription Summary")
     st.write(transcript.summary)
 
-    st.subheader("📊 Speaker Activity")
+    st.subheader("📌 Speaker Activity")
     st.plotly_chart(fig1, use_container_width=True)
 
-    st.subheader("🔗 Topic Flow")
+    st.subheader("📌 Topic Flow")
     st.plotly_chart(fig2, use_container_width=True)
 
     st.subheader("📌 Topic Discussion Timeline")
