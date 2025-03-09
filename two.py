@@ -269,7 +269,7 @@ def process_transcription(transcript,file_url, api_key, speakers_expected):
     st.plotly_chart(fig3, use_container_width=True)
 
     st.subheader("📌 Top 5 topics discussed in class")
-    st.ploty_chart(fig4, use_container_width=True)
+    st.plotly_chart(fig4, use_container_width=True)
     # st.subheader("📈 Sentiment Analysis")
     # for result in transcript.sentiment_analysis:
     #     st.write(f"💬 **{result.text}** - Sentiment: **{result.sentiment}**")
