@@ -157,13 +157,30 @@ def process_transcription(transcript,file_url, api_key, speakers_expected):
     df_speaker["EndTime"] = pd.to_datetime(df_speaker["EndTime"], unit="s")
 
     # Create Speaker Timeline
-    fig1 = px.timeline(
-        df_speaker, x_start="StartTime", x_end="EndTime", y="Speaker",
-        color="Speaker", title="🎤 Speaker Activity Timeline",
-        color_discrete_sequence=px.colors.qualitative.Dark24
-    )
-    fig1.update_layout(xaxis_title="Time", yaxis_title="Speakers", hovermode="x", plot_bgcolor="white")
+    # fig1 = px.timeline(
+    #     df_speaker, x_start="StartTime", x_end="EndTime", y="Speaker",
+    #     color="Speaker", title="🎤 Speaker Activity Timeline",
+    #     color_discrete_sequence=px.colors.qualitative.Dark24
+    # )
+    # fig1.update_layout(xaxis_title="Time", yaxis_title="Speakers", hovermode="x", plot_bgcolor="white")
 
+
+    #changes
+    fig1 = px.timeline(
+     df_speaker, x_start="StartTime", x_end="EndTime", y="Speaker",
+     color="Speaker", title="🎤 Speaker Activity Timeline",
+     color_discrete_sequence=px.colors.qualitative.Dark24
+)
+    fig1.update_layout(
+     xaxis_title="Time",
+     yaxis_title="Speakers",
+     hovermode="x",
+     plot_bgcolor="white",
+     xaxis=dict(
+        tickformat="%H:%M:%S"  # Ensures hover timestamp is formatted as HH:MM:SS instead of a full date
+    )
+)
+   
     # Process Topic Analysis
     topic_timestamps, topic_mapping, topic_count = [], {}, {}
     for result in transcript.iab_categories.results:
@@ -233,25 +250,48 @@ def process_transcription(transcript,file_url, api_key, speakers_expected):
     df_topic["StartTimeFormatted"] = df_topic["StartTime"].apply(format_time)
     df_topic["EndTimeFormatted"] = df_topic["EndTime"].apply(format_time)
 
+    # fig3 = px.bar(
+    #     df_topic, x="StartTime", y="Topic", orientation="h", text="StartTimeFormatted",
+    #     title="📊 Topic Discussion Timeline (Top 10 Topics)", color="Topic"
+    # )
+    # fig3.update_traces(hovertemplate="<b>Topic:</b> %{y}<br><b>Start:</b> %{customdata[0]}<br><b>End:</b> %{customdata[1]}")
+    # # fig3.update_layout(xaxis_title="Time (seconds)", yaxis_title="Topics", plot_bgcolor="white", height=600)
+    # fig3.update_layout(
+    #  xaxis_title="Time (seconds)",
+    #  yaxis_title="Topics",
+    #  plot_bgcolor="white",
+    #  yaxis=dict(
+    #     title="Topics",
+    #     categoryorder="total ascending",  # Order topics from least to most discussed
+    #     tickmode="linear",
+    #     dtick=1  # Ensure topics are spaced out evenly
+    #  ),
+    #  height=600,  # Increase height for better visibility
+    #  margin=dict(l=150, r=50, t=50, b=50)  # Adjust margins for better readability
+    # )
+
+
+    #changes 3
+
     fig3 = px.bar(
-        df_topic, x="StartTime", y="Topic", orientation="h", text="StartTimeFormatted",
-        title="📊 Topic Discussion Timeline (Top 10 Topics)", color="Topic"
-    )
-    fig3.update_traces(hovertemplate="<b>Topic:</b> %{y}<br><b>Start:</b> %{customdata[0]}<br><b>End:</b> %{customdata[1]}")
-    # fig3.update_layout(xaxis_title="Time (seconds)", yaxis_title="Topics", plot_bgcolor="white", height=600)
+      df_topic, x="StartTime", y="Topic", orientation="h",
+      title="📊 Topic Discussion Timeline (Top 10 Topics)", color="Topic"
+)
+    fig3.update_traces(hovertemplate="<b>Topic:</b> %{y}")  # Only display topic name on hover
+
     fig3.update_layout(
-     xaxis_title="Time (seconds)",
-     yaxis_title="Topics",
-     plot_bgcolor="white",
-     yaxis=dict(
+      xaxis_title="Time (seconds)",
+      yaxis_title="Topics",
+      plot_bgcolor="white",
+      yaxis=dict(
         title="Topics",
-        categoryorder="total ascending",  # Order topics from least to most discussed
+        categoryorder="total ascending",
         tickmode="linear",
-        dtick=1  # Ensure topics are spaced out evenly
-     ),
-     height=600,  # Increase height for better visibility
-     margin=dict(l=150, r=50, t=50, b=50)  # Adjust margins for better readability
-    )
+        dtick=1
+    ),
+      height=600,
+      margin=dict(l=150, r=50, t=50, b=50)
+)
 
     top_5_topics = sorted(topic_count.items(), key=lambda x: x[1], reverse=True)[:5]
     topics, counts = zip(*top_5_topics)  # Unpack topics and their respective counts
