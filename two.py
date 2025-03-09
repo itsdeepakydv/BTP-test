@@ -244,7 +244,7 @@ def process_transcription(transcript,file_url, api_key, speakers_expected):
         color=['rgba(0, 0, 255, 0.3)'] * len(source),
     )
 ))
-    fig2.update_layout(title_text="🔗 Topic Flow with Timestamps", font_size=12, height=400)
+    fig2.update_layout(title_text="🔗 Topic Flow with Timestamps", plot_bgcolor="white",font_size=12, height=400)
 
     # Bar Chart for Topic Timeline
     df_topic["StartTimeFormatted"] = df_topic["StartTime"].apply(format_time)
@@ -284,7 +284,7 @@ def process_transcription(transcript,file_url, api_key, speakers_expected):
     fig3.update_layout(
     xaxis_title="Time (seconds)",
     yaxis_title="Topics",
-    plot_bgcolor="grey",
+    plot_bgcolor="white",
     yaxis=dict(
         title="Topics",
         categoryorder="total ascending",  # Order topics from least to most discussed
