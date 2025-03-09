@@ -29,10 +29,13 @@ def transcribe_audio(file_path,speakers_expected):
         speakers_expected=speakers_expected,
         summary_type=aai.SummarizationType.bullets
        )
+   transcriber = aai.Transcriber(config=config)
+   transcript = transcriber.transcribe(file_path)
+   return transcript
     
-    transcriber = aai.Transcriber(config=config)
-    transcript = transcriber.transcribe(file_path)
-    return transcript
+    # transcriber = aai.Transcriber(config=config)
+    # transcript = transcriber.transcribe(file_path)
+    # return transcript
 
 # def extract_topics(transcript):
 #     topic_timestamps = []
