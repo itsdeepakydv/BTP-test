@@ -13,7 +13,8 @@ import os
 # Load spaCy model for Named Entity Recognition (NER)
 # nlp = spacy.load("en_core_web_sm")
 
-aai.settings.api_key = "85e63f64ed954279bff9a588c0bd2f2f"  # Replace with your actual API key
+# aai.settings.api_key = "85e63f64ed954279bff9a588c0bd2f2f"  # Replace with your actual API key
+aai.settings.api_key = "c5e969359a834a4b982f558b622d8edf"
 
 def transcribe_audio(file_path,speakers_expected):
    config = aai.TranscriptionConfig(
