@@ -274,24 +274,27 @@ def process_transcription(transcript,file_url, api_key, speakers_expected):
     #changes 3
 
     fig3 = px.bar(
-      df_topic, x="StartTime", y="Topic", orientation="h",
-      title="📊 Topic Discussion Timeline (Top 10 Topics)", color="Topic"
+    df_topic, x="StartTime", y="Topic", orientation="h", text="StartTimeFormatted",
+    title="📊 Topic Discussion Timeline (Top 10 Topics)", color="Topic"
 )
-    fig3.update_traces(hovertemplate="<b>Topic:</b> %{y}")  # Only display topic name on hover
+
+# Remove custom data for hover and use timestamp directly
+    fig3.update_traces(hovertemplate="<b>Topic:</b> %{y}<br><b>Time:</b> %{text}")
 
     fig3.update_layout(
-      xaxis_title="Time (seconds)",
-      yaxis_title="Topics",
-      plot_bgcolor="white",
-      yaxis=dict(
+    xaxis_title="Time (seconds)",
+    yaxis_title="Topics",
+    plot_bgcolor="white",
+    yaxis=dict(
         title="Topics",
-        categoryorder="total ascending",
+        categoryorder="total ascending",  # Order topics from least to most discussed
         tickmode="linear",
-        dtick=1
+        dtick=1  # Ensure topics are spaced out evenly
     ),
-      height=600,
-      margin=dict(l=150, r=50, t=50, b=50)
+    height=600,  # Increase height for better visibility
+    margin=dict(l=150, r=50, t=50, b=50)  # Adjust margins for better readability
 )
+
 
     top_5_topics = sorted(topic_count.items(), key=lambda x: x[1], reverse=True)[:5]
     topics, counts = zip(*top_5_topics)  # Unpack topics and their respective counts
