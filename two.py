@@ -251,7 +251,7 @@ def process_transcription(transcript,file_url, api_key, speakers_expected):
     )
 
 # Display in Streamlit
-    st.plotly_chart(fig4, use_container_width=True)
+    # st.plotly_chart(fig4, use_container_width=True)
 
       
 
