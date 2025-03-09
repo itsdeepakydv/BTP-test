@@ -26,7 +26,7 @@ def transcribe_audio(file_path,speakers_expected):
         entity_detection=True,
         speaker_labels=True,
         language_detection=True,
-        speakers_expected=speakers_expected,
+        speakers_expected=10,
         summary_type=aai.SummarizationType.bullets
        )
    transcriber = aai.Transcriber(config=config)
