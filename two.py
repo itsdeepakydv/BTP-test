@@ -240,18 +240,18 @@ def process_transcription(transcript,file_url, api_key, speakers_expected):
     fig3.update_layout(xaxis_title="Time (seconds)", yaxis_title="Topics", plot_bgcolor="white", height=600)
 
     top_5_topics = sorted(topic_count.items(), key=lambda x: x[1], reverse=True)[:5]
-topics, counts = zip(*top_5_topics)  # Unpack topics and their respective counts
+    topics, counts = zip(*top_5_topics)  # Unpack topics and their respective counts
 
 # Create pie chart using Plotly
-fig4 = px.pie(
+    fig4 = px.pie(
     names=topics,
     values=counts,
     title="🎤 Top 5 Discussed Topics in Classroom Audio",
     color_discrete_sequence=px.colors.qualitative.Set2
-)
+    )
 
 # Display in Streamlit
-st.plotly_chart(fig4, use_container_width=True)
+    st.plotly_chart(fig4, use_container_width=True)
 
       
 
