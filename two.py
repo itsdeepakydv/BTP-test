@@ -15,11 +15,19 @@ import os
 
 aai.settings.api_key = "85e63f64ed954279bff9a588c0bd2f2f"  # Replace with your actual API key
 
-def transcribe_audio(file_path):
-    config = aai.TranscriptionConfig(
+def transcribe_audio(file_path,speakers_expected):
+   config = aai.TranscriptionConfig(
         speech_model=aai.SpeechModel.best,
+        summarization=True,
+        summary_model=aai.SummarizationModel.informative,
+        iab_categories=True,
+        auto_highlights=True,
+        sentiment_analysis=True,
+        entity_detection=True,
         speaker_labels=True,
-        speakers_expected=10
+        language_detection=True,
+        speakers_expected=speakers_expected,
+        summary_type=aai.SummarizationType.bullets
     )
     
     transcriber = aai.Transcriber(config=config)
@@ -100,34 +108,34 @@ def analyze_teaching_style(teacher_speech_ratio, interactivity_score):
     return style
 
 
-def process_transcription(file_url, api_key, speakers_expected):
+def process_transcription(transcript,file_url, api_key, speakers_expected):
     st.subheader("📢 Processing Audio File...")
     
     # Set API key
-    aai.settings.api_key = api_key
+    # aai.settings.api_key = api_key
 
-    # Configure transcription settings
-    config = aai.TranscriptionConfig(
-        speech_model=aai.SpeechModel.best,
-        summarization=True,
-        summary_model=aai.SummarizationModel.informative,
-        iab_categories=True,
-        auto_highlights=True,
-        sentiment_analysis=True,
-        entity_detection=True,
-        speaker_labels=True,
-        language_detection=True,
-        speakers_expected=speakers_expected,
-        summary_type=aai.SummarizationType.bullets
-    )
+    # # Configure transcription settings
+    # config = aai.TranscriptionConfig(
+    #     speech_model=aai.SpeechModel.best,
+    #     summarization=True,
+    #     summary_model=aai.SummarizationModel.informative,
+    #     iab_categories=True,
+    #     auto_highlights=True,
+    #     sentiment_analysis=True,
+    #     entity_detection=True,
+    #     speaker_labels=True,
+    #     language_detection=True,
+    #     speakers_expected=speakers_expected,
+    #     summary_type=aai.SummarizationType.bullets
+    # )
 
-    # Transcribe the file
-    transcriber = aai.Transcriber(config=config)
-    transcript = transcriber.transcribe(file_url)
+    # # Transcribe the file
+    # transcriber = aai.Transcriber(config=config)
+    # transcript = transcriber.transcribe(file_url)
 
-    if transcript.status == aai.TranscriptStatus.error:
-        st.error(f"❌ Error: {transcript.error}")
-        return
+    # if transcript.status == aai.TranscriptStatus.error:
+    #     st.error(f"❌ Error: {transcript.error}")
+    #     return
 
     # Process Speaker Activity
     speaker_activity = []
@@ -256,7 +264,7 @@ def main():
             f.write(uploaded_file.getbuffer())
         
         st.write("Processing... This may take a while.")
-        transcript = transcribe_audio(file_path)
+        transcript = transcribe_audio(file_path,total_strength)
         
         if transcript.status == aai.TranscriptStatus.error:
             st.error("Error in transcription: " + transcript.error)
@@ -310,7 +318,7 @@ def main():
 
             # transcribe_and_visualize(uploaded_file)
             api_key="85e63f64ed954279bff9a588c0bd2f2f"
-            process_transcription(file_path, api_key,total_strength)
+            process_transcription(transcript,file_path, api_key,total_strength)
 
         os.remove(file_path)
 
