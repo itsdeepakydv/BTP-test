@@ -239,29 +239,19 @@ def process_transcription(transcript,file_url, api_key, speakers_expected):
     fig3.update_traces(hovertemplate="<b>Topic:</b> %{y}<br><b>Start:</b> %{customdata[0]}<br><b>End:</b> %{customdata[1]}")
     fig3.update_layout(xaxis_title="Time (seconds)", yaxis_title="Topics", plot_bgcolor="white", height=600)
 
-    N = 5  # Show top 5 topics (Change to 10 if you want more)
-    top_n_topics = sorted(topic_count, key=topic_count.get, reverse=True)[:N]
+    top_5_topics = sorted(topic_count.items(), key=lambda x: x[1], reverse=True)[:5]
+topics, counts = zip(*top_5_topics)  # Unpack topics and their respective counts
 
-# Create a DataFrame with only the top N topics
-    top_topics_df = pd.DataFrame({"Topic": top_n_topics, "Count": [topic_count[t] for t in top_n_topics]})
+# Create pie chart using Plotly
+fig4 = px.pie(
+    names=topics,
+    values=counts,
+    title="🎤 Top 5 Discussed Topics in Classroom Audio",
+    color_discrete_sequence=px.colors.qualitative.Set2
+)
 
-# Generate Pie Chart
-    fig4 = px.pie(
-    top_topics_df,
-    names="Topic",
-    values="Count",
-    title=f"📊 Top {N} Most Discussed Topics in the Classroom",
-    hole=0.3,  # Creates a donut-style pie chart (optional)
-    color_discrete_sequence=px.colors.qualitative.Set2  # Use a visually distinct color set
-    )
-
-# Customize layout for better readability
-    fig4.update_traces(textinfo="label+percent", pull=[0.1]*N)  # Slightly pull out each slice for emphasis
-    fig4.update_layout(
-    showlegend=True,
-    height=500,
-    width=500
-    )
+# Display in Streamlit
+st.plotly_chart(fig4, use_container_width=True)
 
       
 
