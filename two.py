@@ -244,7 +244,11 @@ def process_transcription(transcript,file_url, api_key, speakers_expected):
         color=['rgba(0, 0, 255, 0.3)'] * len(source),
     )
 ))
-    fig2.update_layout(title_text="🔗 Topic Flow with Timestamps", plot_bgcolor="white",font_size=12, height=400)
+    fig2.update_layout(
+    plot_bgcolor="white",  # Set the plot background to white
+    paper_bgcolor="white",  # Set the overall figure background to white
+    margin=dict(l=50, r=50, t=50, b=50),  # Adjust margins for a clean look
+)
 
     # Bar Chart for Topic Timeline
     df_topic["StartTimeFormatted"] = df_topic["StartTime"].apply(format_time)
