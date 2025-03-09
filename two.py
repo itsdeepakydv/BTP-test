@@ -346,7 +346,7 @@ def main():
             api_key="85e63f64ed954279bff9a588c0bd2f2f"
             process_transcription(transcript,file_path, api_key,total_strength)
 
-        os.remove(file_path)
+        # os.remove(file_path)
 
 if __name__ == "__main__":
     main()
