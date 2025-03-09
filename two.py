@@ -189,12 +189,28 @@ def process_transcription(file_url, api_key, speakers_expected):
     target.append(labels.index("End"))
     values.append(1)
     timestamps.append(format_time(row["EndTime"]))
+    colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#F4A226",
+          "#6A0DAD", "#2E8B57", "#1E90FF", "#8B0000", "#FFD700"]
 
     fig2 = go.Figure(go.Sankey(
-        node=dict(label=[""] * len(labels), pad=50, thickness=30, color="blue"),
-        link=dict(source=source, target=target, value=values, customdata=timestamps,
-                  hovertemplate="Time: %{customdata}<extra></extra>")
-    ))
+    arrangement="perpendicular",
+    node=dict(
+        label=[""] * len(labels),
+        pad=50,
+        thickness=30,
+        color=colors[:len(labels)],
+        customdata=labels,
+        hovertemplate="Topic: %{customdata}<extra></extra>",
+    ),
+    link=dict(
+        source=source,
+        target=target,
+        value=values,
+        customdata=timestamps,
+        hovertemplate="From: %{source.labels} → To: %{target.labels}<br>Time: %{customdata}",  # Displays time in MM:SS
+        color=['rgba(0, 0, 255, 0.3)'] * len(source)
+    )
+))
     fig2.update_layout(title_text="🔗 Topic Flow with Timestamps", font_size=12, height=400)
 
     # Bar Chart for Topic Timeline
