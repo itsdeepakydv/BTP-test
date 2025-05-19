@@ -23,18 +23,7 @@ from sklearn.cluster import AgglomerativeClustering
 from sklearn.decomposition import PCA
 
 def demonstrate_clustering_with_audio(file_path, n_clusters=5, show_plot=True):
-    """
-    Demonstrates the use of unsupervised learning by applying agglomerative clustering
-    on audio features extracted from a denoised audio file.
-
-    Parameters:
-        file_path (str): Path to the local audio (.wav) file.
-        n_clusters (int): Number of clusters to use for the agglomerative clustering algorithm.
-        show_plot (bool): If True, displays a PCA-reduced 2D scatter plot of clustered data.
-
-    Returns:
-        dict: A dictionary with clustering labels and feature matrix.
-    """
+    
     # Load audio data from the file
     audio_data, sample_rate = librosa.load(file_path, sr=None)
 
