@@ -16,11 +16,7 @@ import os
 
 aai.settings.api_key = "c5e969359a834a4b982f558b622d8edf"
 
-import numpy as np
-import librosa
-import matplotlib.pyplot as plt
-from sklearn.cluster import AgglomerativeClustering
-from sklearn.decomposition import PCA
+
 
 def demonstrate_clustering_with_audio(file_path, n_clusters=5, show_plot=True):
     
