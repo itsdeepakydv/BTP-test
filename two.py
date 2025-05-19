@@ -16,6 +16,60 @@ import os
 
 aai.settings.api_key = "c5e969359a834a4b982f558b622d8edf"
 
+import numpy as np
+import librosa
+import matplotlib.pyplot as plt
+from sklearn.cluster import AgglomerativeClustering
+from sklearn.decomposition import PCA
+
+def demonstrate_clustering_with_audio(file_path, n_clusters=5, show_plot=True):
+    """
+    Demonstrates the use of unsupervised learning by applying agglomerative clustering
+    on audio features extracted from a denoised audio file.
+
+    Parameters:
+        file_path (str): Path to the local audio (.wav) file.
+        n_clusters (int): Number of clusters to use for the agglomerative clustering algorithm.
+        show_plot (bool): If True, displays a PCA-reduced 2D scatter plot of clustered data.
+
+    Returns:
+        dict: A dictionary with clustering labels and feature matrix.
+    """
+    # Load audio data from the file
+    audio_data, sample_rate = librosa.load(file_path, sr=None)
+
+    # Extract a combination of acoustic features
+    mfcc = librosa.feature.mfcc(y=audio_data, sr=sample_rate, n_mfcc=13)
+    chroma = librosa.feature.chroma_stft(y=audio_data, sr=sample_rate)
+    contrast = librosa.feature.spectral_contrast(y=audio_data, sr=sample_rate)
+
+    # Combine and transpose features for clustering (shape: [frames, features])
+    feature_matrix = np.vstack([mfcc, chroma, contrast]).T
+
+    # Apply Agglomerative Clustering to the feature matrix
+    model = AgglomerativeClustering(n_clusters=n_clusters)
+    labels = model.fit_predict(feature_matrix)
+
+    # Visualize using PCA (optional)
+    if show_plot:
+        reduced_features = PCA(n_components=2).fit_transform(feature_matrix)
+        plt.figure(figsize=(8, 6))
+        plt.scatter(reduced_features[:, 0], reduced_features[:, 1], c=labels, cmap='viridis', s=10)
+        plt.title("Agglomerative Clustering of Audio Features")
+        plt.xlabel("Principal Component 1")
+        plt.ylabel("Principal Component 2")
+        plt.colorbar(label="Cluster")
+        plt.tight_layout()
+        plt.show()
+
+    return {"labels": labels, "features": feature_matrix}
+
+
+
+
+
+
+
 def transcribe_audio(file_path,speakers_expected):
    config = aai.TranscriptionConfig(
         speech_model=aai.SpeechModel.best,
